@@ -20,7 +20,8 @@
         <div
           class="head-buttons"
           v-if="!switchButtons"
-        >          <div
+        >
+          <div
             class="head-button minimize-button"
             @click.stop.prevent="onClickMinimizeButton"
           >
@@ -36,7 +37,6 @@
           </div>
 
         </div>
-
 
         <div
           class="head-buttons"
@@ -166,6 +166,11 @@ export default {
       default: true
     },
     switchButtons:
+    {
+      type: Boolean,
+      default: false
+    },
+    restrictByWindow:
     {
       type: Boolean,
       default: false
@@ -322,14 +327,22 @@ export default {
     },
     onDraggableMove (event) {
 
+      // boundingClientRect = position of box
+      // width height = width height of box
+      // window.innerHeight = window height width
+
       let width = this.rectWidth;
       let height = this.rectHeight;
+     
       this.boundingClientRect.left =
         event.clientX - this.draggingDownEvent.offsetX;
+
       this.boundingClientRect.top =
         event.clientY - this.draggingDownEvent.offsetY;
-      this.boundingClientRect.right = this.boundingClientRect.left + width;
-      this.boundingClientRect.bottom = this.boundingClientRect.top + height;
+      if (this.boundingClientRect.left + width < window.innerWidth - 10 || !this.restrictByWindow)
+        this.boundingClientRect.right = this.boundingClientRect.left + width;
+      if (this.boundingClientRect.top + height < window.innerHeight - 10 || !this.restrictByWindow)
+        this.boundingClientRect.bottom = this.boundingClientRect.top + height;
     },
     onResizableDown (name) {
       if (!this.resizable) {
