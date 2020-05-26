@@ -16,19 +16,44 @@
         @mousedown="onDraggableDown"
       >
         <div class="title-text">{{title}}</div>
-        <div class="head-buttons">
 
         <div
+          class="head-buttons"
+          v-if="!switchButtons"
+        >          <div
+            class="head-button minimize-button"
+            @click.stop.prevent="onClickMinimizeButton"
+          >
+
+            <div></div>
+          </div>
+          <div
             class="head-button maximize-button"
             v-if="resizable"
             @click.stop.prevent="onClickMaximizeButton"
           >
             <div></div>
-          </div>   <div
+          </div>
+
+        </div>
+
+
+        <div
+          class="head-buttons"
+          v-if="switchButtons"
+        >
+          <div
+            class="head-button maximize-button"
+            v-if="resizable"
+            @click.stop.prevent="onClickMaximizeButton"
+          >
+            <div></div>
+          </div>
+          <div
             class="head-button minimize-button"
             @click.stop.prevent="onClickMinimizeButton"
           >
-         
+
             <div></div>
           </div>
         </div>
@@ -139,6 +164,11 @@ export default {
     recordVisibility: {
       type: Boolean,
       default: true
+    },
+    switchButtons:
+    {
+      type: Boolean,
+      default: false
     }
   },
   data () {
