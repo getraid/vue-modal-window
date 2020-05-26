@@ -1,23 +1,52 @@
 <template>
-  <div class="vue-modal-window" v-show="visibleMain">
-    <div class="main" :class="{active: active}" :style="modalStyle" @click="onClickModal">
-      <div class="title" :title="title" @dblclick="maximize" @mousedown="onDraggableDown">
+  <div
+    class="vue-modal-window"
+    v-show="visibleMain"
+  >
+    <div
+      class="main"
+      :class="{active: active}"
+      :style="modalStyle"
+      @click="onClickModal"
+    >
+      <div
+        class="title"
+        :title="title"
+        @dblclick="maximize"
+        @mousedown="onDraggableDown"
+      >
         <div class="title-text">{{title}}</div>
         <div class="head-buttons">
-          <div class="head-button minimize-button" @click.stop.prevent="onClickMinimizeButton">
+
+        <div
+            class="head-button maximize-button"
+            v-if="resizable"
+            @click.stop.prevent="onClickMaximizeButton"
+          >
             <div></div>
-          </div>
-          <div class="head-button maximize-button" v-if="resizable" @click.stop.prevent="onClickMaximizeButton">
+          </div>   <div
+            class="head-button minimize-button"
+            @click.stop.prevent="onClickMinimizeButton"
+          >
+         
             <div></div>
           </div>
         </div>
       </div>
-      <div class="modal-content" ref="content">
+      <div
+        class="modal-content"
+        ref="content"
+      >
         <slot></slot>
-        <iframe v-if="contentUrl" :src="contentUrl" ref="iframe"></iframe>
+        <iframe
+          v-if="contentUrl"
+          :src="contentUrl"
+          ref="iframe"
+        ></iframe>
       </div>
-      <div class="resizable-elements"
-          v-if="resizable"
+      <div
+        class="resizable-elements"
+        v-if="resizable"
       >
         <div
           class="resizable"
@@ -31,13 +60,17 @@
         ></div>
       </div>
     </div>
-    <div class="cover" :class="activeResizableName" v-show="dragging || activeResizableName"></div>
+    <div
+      class="cover"
+      :class="activeResizableName"
+      v-show="dragging || activeResizableName"
+    ></div>
   </div>
 </template>
 
 <script>
 import uuid from 'uuid';
-const uuidv4 = uuid.v4;
+// const uuidv4 = uuid.v4;
 
 let instanceOrderedList = [];
 const baseZIndex = 1000;
@@ -48,7 +81,7 @@ export default {
   props: {
     id: {
       type: String,
-      default: function() {
+      default: function () {
         return uuid();
       }
     },
@@ -108,7 +141,7 @@ export default {
       default: true
     }
   },
-  data() {
+  data () {
     let boundingClientRect = {
       left: parseInt(this.left),
       top: parseInt(this.top),
@@ -140,13 +173,13 @@ export default {
     };
   },
   computed: {
-    rectWidth() {
+    rectWidth () {
       return this.boundingClientRect.right - this.boundingClientRect.left;
     },
-    rectHeight() {
+    rectHeight () {
       return this.boundingClientRect.bottom - this.boundingClientRect.top;
     },
-    modalStyle() {
+    modalStyle () {
       if (this.maximized) {
         return {
           width: window.innerWidth + "px",
@@ -165,32 +198,32 @@ export default {
         zIndex: this.zIndex
       };
     },
-    zIndex() {
+    zIndex () {
       return baseZIndex + this.instanceOrderedList.indexOf(this);
     },
-    active() {
+    active () {
       return (
         this.instanceOrderedList[this.instanceOrderedList.length - 1] === this
       );
     },
-    visibleMain() {
+    visibleMain () {
       return this.visible && !this.anotherWindow;
     }
   },
-  mounted() {
+  mounted () {
     this.instanceOrderedList.push(this);
     document.body.addEventListener("mousemove", this.onMouseMove, false);
     document.body.addEventListener("mouseup", this.onMouseUp, false);
     document.body.addEventListener("mouseleave", this.onMouseLeave, false);
   },
-  beforeDestroy() {
+  beforeDestroy () {
     this.deleleFromInstanceOrderedList();
     document.body.removeEventListener("mousemove", this.onMouseMove, false);
     document.body.removeEventListener("mouseup", this.onMouseUp, false);
     document.body.removeEventListener("mouseleave", this.onMouseLeave, false);
   },
   methods: {
-    onMouseMove(event) {
+    onMouseMove (event) {
       if (this.draggingDownEvent) {
         this.dragging = true;
       }
@@ -203,7 +236,7 @@ export default {
         this.resize(this.activeResizableName, event.clientX, event.clientY);
       }
     },
-    onMouseUp(event) {
+    onMouseUp () {
       if ((this.dragging || this.activeResizableName) && this.recordRect) {
         let vmodalDataDict =
           JSON.parse(localStorage.getItem(localStorageKey)) || {};
@@ -221,20 +254,20 @@ export default {
       this.draggingDownEvent = null;
       return true;
     },
-    onClickModal(event) {
+    onClickModal () {
       this.setForeground();
     },
-    onClickMaximizeButton(event) {
+    onClickMaximizeButton () {
       if (this.enableAnotherWindow) {
         this.openWindow();
       } else {
         this.maximize();
       }
     },
-    onClickMinimizeButton(event) {
+    onClickMinimizeButton () {
       this.$emit("update:visible", !this.visible);
     },
-    onDraggableDown(event) {
+    onDraggableDown () {
       if (
         !event.target.classList.contains("title") &&
         !event.target.classList.contains("title-text")
@@ -251,13 +284,13 @@ export default {
         offsetY: event.offsetY
       };
     },
-    onMouseLeave(event) {
+    onMouseLeave () {
       this.dragging = false;
       this.draggingDownEvent = null;
       this.activeResizableName = null;
       return false;
     },
-    onDraggableMove(event) {
+    onDraggableMove (event) {
 
       let width = this.rectWidth;
       let height = this.rectHeight;
@@ -268,13 +301,13 @@ export default {
       this.boundingClientRect.right = this.boundingClientRect.left + width;
       this.boundingClientRect.bottom = this.boundingClientRect.top + height;
     },
-    onResizableDown(name) {
+    onResizableDown (name) {
       if (!this.resizable) {
         return;
       }
       this.activeResizableName = name;
     },
-    resize(resizableName, x, y) {
+    resize (resizableName, x, y) {
       this.dispatchResizeEvent();
       let operations = resizableName.split("-");
       if (operations.indexOf("left") !== -1) {
@@ -302,7 +335,7 @@ export default {
         );
       }
     },
-    validateBoundingClientRect(rect) {
+    validateBoundingClientRect (rect) {
       let width = this.rectWidth;
       let height = this.rectHeight;
       rect.top = Math.min(
@@ -316,18 +349,18 @@ export default {
       rect.right = rect.left + width;
       rect.bottom = rect.top + height;
     },
-    deleleFromInstanceOrderedList() {
+    deleleFromInstanceOrderedList () {
       const index = this.instanceOrderedList.indexOf(this);
       if (index === -1) {
         throw new Error("This instance has not exist in instanceOrderList");
       }
       return this.instanceOrderedList.splice(index, 1);
     },
-    setForeground() {
+    setForeground () {
       this.deleleFromInstanceOrderedList();
       this.instanceOrderedList.push(this);
     },
-    openWindow() {
+    openWindow () {
       if (this.contentUrl) {
         this.anotherWindow = window.open(
           this.contentUrl,
@@ -361,19 +394,19 @@ export default {
         });
       });
     },
-    reload() {
+    reload () {
       if (this.contentUrl) {
         this.$refs.iframe.contentDocument.location.reload(true);
       }
     },
-    maximize() {
+    maximize () {
       if (!this.resizable) {
         return;
       }
       this.dispatchResizeEvent();
       this.maximized = !this.maximized;
     },
-    dispatchResizeEvent() {
+    dispatchResizeEvent () {
       if (!this.$refs.content.children || this.$refs.content.children.length === 0) {
         return;
       }
@@ -383,7 +416,7 @@ export default {
     }
   },
   watch: {
-    visible(value) {
+    visible (value) {
       if (value) {
         this.setForeground();
       } else {
